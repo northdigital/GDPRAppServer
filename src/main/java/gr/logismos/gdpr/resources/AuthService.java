@@ -36,8 +36,8 @@ public class AuthService {
 
       X509CertificateValidator x509CertificateValidator = new X509CertificateValidator();
       KeyStore keyStore = x509CertificateValidator.loadKeyStoreFromFile(
-        "D:\\Projects\\X509CertificateValidator\\ssl\\keys2.jks", "sporades");
-      boolean isValid = x509CertificateValidator.isValidCertificate(x509Certificate,keyStore);
+        "C:\\Users\\Panagiotis\\Documents\\ForBackup\\Projects\\Logismos\\X509CertificateValidator\\ssl\\keys.jks", "sporades");
+      boolean isValid = x509CertificateValidator.isValidCertificate(x509Certificate, keyStore);
       System.out.println(isValid);
     } catch (Exception e) {
       e.printStackTrace();
