@@ -27,10 +27,9 @@ public class AuthService {
     Object o = null;
 
     try {
-      Security.addProvider(new BouncyCastleProvider());
       StringReader reader = new StringReader(userCredentials.pem);
       PEMReader pr = new PEMReader(reader);
-      o = pr.readPemObject();
+      cert = (X509Certificate) pr.readObject();
       pr.close();
     } catch (IOException e) {
       e.printStackTrace();
