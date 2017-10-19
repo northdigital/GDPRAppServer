@@ -6,17 +6,23 @@ import gr.logismos.gdpr.utils.GException;
 import gr.logismos.gdpr.utils.GTicketGenerator;
 import gr.logismos.gdpr.utils.GUnauthorizedException;
 import gr.logismos.x509certificatevalidator.X509CertificateValidator;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.openssl.PEMReader;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 @Path("/auth")
 public class GAuthService {
-  private final String BASE_PATH = "D:\\Projects\\X509CertificateValidator\\ssl\\";
+  private final String BASE_PATH = "C:\\Users\\Panagiotis\\Desktop\\ssl\\";
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
@@ -35,7 +41,16 @@ public class GAuthService {
 
       GAccessTicket gAccessTicket = null;
 
-      if(isValid) {
+      if (isValid) {
+        byte[] extensionValue = x509Certificate.getExtensionValue("2.16.840.1.113730.1.13");
+
+        ASN1InputStream asn1InputStream = new ASN1InputStream(new ByteArrayInputStream(extensionValue));
+        ASN1OctetString asn1OctetString = (ASN1OctetString) asn1InputStream.readObject();
+        asn1InputStream = new ASN1InputStream(new ByteArrayInputStream(asn1OctetString.getOctets()));
+        String secret = asn1InputStream.readObject().toString();
+
+        //TODO validate secret
+
         gAccessTicket = GTicketGenerator.generate("demo", 30);
         return gAccessTicket;
       }
