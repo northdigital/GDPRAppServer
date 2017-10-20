@@ -14,7 +14,7 @@ import java.util.List;
 @ApplicationPath("/")
 public class AppConfig extends ResourceConfig {
   private static ArrayList<GAccessTicket> _gAccessTickets = new ArrayList<>();
-  public List<GAccessTicket> gAaccessTickets = Collections.synchronizedList(_gAccessTickets);
+  public List<GAccessTicket> gAccessTickets = Collections.synchronizedList(_gAccessTickets);
 
   public AppConfig() {
     Security.addProvider(new BouncyCastleProvider());
