@@ -1,8 +1,8 @@
-package gr.logismos.gdpr;
+package gr.northdigital.gdpr;
 
 import javax.ws.rs.ApplicationPath;
 
-import gr.logismos.gdpr.models.GAccessTicket;
+import gr.northdigital.gdpr.models.GAccessTicket;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 

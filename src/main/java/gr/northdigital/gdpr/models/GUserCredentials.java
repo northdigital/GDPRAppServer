@@ -1,4 +1,4 @@
-package gr.logismos.gdpr.models;
+package gr.northdigital.gdpr.models;
 
 public class GUserCredentials {
   public String userName;

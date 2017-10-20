@@ -1,16 +1,13 @@
-package gr.logismos.gdpr.resources;
+package gr.northdigital.gdpr.resources;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("/decryptor")
 public class Decryptor {
   @GET
-  @Produces(MediaType.TEXT_PLAIN)
   @Path("decrypt")
+  @Produces(MediaType.TEXT_PLAIN)
   public String decrypt(@QueryParam("enc") String encryptedString) {
     return encryptedString.toUpperCase();
   }

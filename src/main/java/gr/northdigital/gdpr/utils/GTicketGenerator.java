@@ -1,6 +1,6 @@
-package gr.logismos.gdpr.utils;
+package gr.northdigital.gdpr.utils;
 
-import gr.logismos.gdpr.models.GAccessTicket;
+import gr.northdigital.gdpr.models.GAccessTicket;
 
 import java.util.Date;
 import java.util.UUID;

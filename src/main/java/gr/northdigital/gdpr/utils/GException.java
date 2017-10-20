@@ -1,4 +1,4 @@
-package gr.logismos.gdpr.utils;
+package gr.northdigital.gdpr.utils;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
