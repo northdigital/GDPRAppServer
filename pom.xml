@@ -61,11 +61,19 @@
       <version>3.6</version>
     </dependency>
 
-    <!--<dependency>-->
-      <!--<groupId>commons-configuration</groupId>-->
-      <!--<artifactId>commons-configuration</artifactId>-->
-      <!--<version>1.10</version>-->
-    <!--</dependency>-->
+    <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.10</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/commons-configuration/commons-configuration -->
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.10</version>
+    </dependency>
 
   </dependencies>
 

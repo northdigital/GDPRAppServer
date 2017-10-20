@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 @Path("/auth")
@@ -28,14 +29,20 @@ public class GAuthService {
     try {
       X509Certificate x509Certificate = SSL.loadCertificateFromPemString(userCredentials.pem);
       KeyStore keyStore = SSL.loadKeyStoreFromFile(BASE_PATH + "keys.jks", "sporades");
+      PrivateKey privateKey = (PrivateKey) keyStore.getKey("root", "sporades".toCharArray());
+
       boolean isValid = SSL.isValidCertificate(x509Certificate, keyStore);
 
       if (isValid) {
-        String secret = SSL.getExtensionValue(x509Certificate, "2.16.840.1.113730.1.13");
-        String[] secretParts = StringUtils.splitByWholeSeparatorPreserveAllTokens(secret, "_@#@_");
+        String encodedOid = SSL.getExtensionValue(x509Certificate, "2.16.840.1.113730.1.13");
+        String decodedOid = SSL.decryptTextWithKey(privateKey, encodedOid);
 
-        GAccessTicket gAccessTicket = GTicketGenerator.generate("demo", 30);
-        return gAccessTicket;
+        String[] secretParts = StringUtils.splitByWholeSeparatorPreserveAllTokens(decodedOid, " ");
+
+        if(userCredentials.userName.equals(secretParts[0]) && userCredentials.password.equals(secretParts[1])) {
+          GAccessTicket gAccessTicket = GTicketGenerator.generate("demo", 30);
+          return gAccessTicket;
+        }
       }
     } catch (Exception e) {
       throw new GException(e.getMessage());
