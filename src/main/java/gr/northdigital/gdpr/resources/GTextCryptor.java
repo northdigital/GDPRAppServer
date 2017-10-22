@@ -13,7 +13,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 
 @Path("/textcryptor")
-public class Textcryptor {
+public class GTextCryptor {
   private final static String BASE_PATH = "C:\\Users\\Panagiotis\\Desktop\\ssl\\";
 
   @GET

@@ -1,22 +1,26 @@
 package gr.northdigital.gdpr.resources;
 
-import gr.northdigital.gdpr.models.GAccessTicket;
+import gr.northdigital.gdpr.AppConfig;
+import gr.northdigital.gdpr.models.GTicket;
+import gr.northdigital.gdpr.models.GSession;
 import gr.northdigital.gdpr.models.GUserCredentials;
 import gr.northdigital.gdpr.utils.GException;
-import gr.northdigital.gdpr.utils.GTicketGenerator;
 import gr.northdigital.gdpr.utils.GUnauthorizedException;
 import gr.northdigital.utilssl.SSL;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.sessions.Session;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.math.BigInteger;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 
 @Path("/auth")
 public class GAuthService {
@@ -26,7 +30,7 @@ public class GAuthService {
   @Path("/authenticate")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public GAccessTicket authenticate(GUserCredentials userCredentials) throws Exception {
+  public GTicket authenticate(GUserCredentials userCredentials) throws Exception {
     try {
       X509Certificate x509Certificate = SSL.loadCertificateFromPemString(userCredentials.pem);
       KeyStore keyStore = SSL.loadKeyStoreFromFile(BASE_PATH + "keys.jks", "sporades");
@@ -42,8 +46,33 @@ public class GAuthService {
         byte[] symmetricKey = Hex.decodeHex(SSL.decryptTextWithKey(privateKey, secretParts[2]).toCharArray());
 
         if(userCredentials.userName.equals(userName) && userCredentials.password.equals(password)) {
-          GAccessTicket gAccessTicket = GTicketGenerator.generate(userName, 30);
-          return gAccessTicket;
+
+          GSession _session = null;
+
+          synchronized (AppConfig.sessions) {
+            for (GSession session : AppConfig.sessions) {
+              if(session.subjectDN.equals(x509Certificate.getSubjectDN().getName())) {
+                _session = session;
+                break;
+              }
+            }
+          }
+
+          if(_session == null) {
+            Date now = new Date();
+            _session = new GSession();
+            _session.ticket = new GTicket();
+            _session.symmetricKey = symmetricKey;
+            _session.subjectDN = x509Certificate.getSubjectDN().getName();
+            _session.createdAt = now;
+            _session.lastAccessedAt = now;
+
+            AppConfig.sessions.add(_session);
+          } else {
+            _session.lastAccessedAt = new Date();
+          }
+
+          return _session.ticket;
         }
       }
     } catch (Exception e) {
