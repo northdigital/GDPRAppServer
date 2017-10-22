@@ -6,6 +6,7 @@ import gr.northdigital.gdpr.utils.GException;
 import gr.northdigital.gdpr.utils.GTicketGenerator;
 import gr.northdigital.gdpr.utils.GUnauthorizedException;
 import gr.northdigital.utilssl.SSL;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.Consumes;
@@ -29,18 +30,19 @@ public class GAuthService {
     try {
       X509Certificate x509Certificate = SSL.loadCertificateFromPemString(userCredentials.pem);
       KeyStore keyStore = SSL.loadKeyStoreFromFile(BASE_PATH + "keys.jks", "sporades");
-      PrivateKey privateKey = (PrivateKey) keyStore.getKey("root", "sporades".toCharArray());
+      PrivateKey privateKey = (PrivateKey) keyStore.getKey("root.pk", "sporades".toCharArray());
 
       boolean isValid = SSL.isValidCertificate(x509Certificate, keyStore);
 
       if (isValid) {
         String encodedOid = SSL.getExtensionValue(x509Certificate, "2.16.840.1.113730.1.13");
-        String decodedOid = SSL.decryptTextWithKey(privateKey, encodedOid);
+        String[] secretParts = StringUtils.splitByWholeSeparatorPreserveAllTokens(encodedOid, " ");
+        String userName = SSL.decryptTextWithKey(privateKey, secretParts[0]);
+        String password = SSL.decryptTextWithKey(privateKey, secretParts[1]);
+        byte[] symmetricKey = Hex.decodeHex(SSL.decryptTextWithKey(privateKey, secretParts[2]).toCharArray());
 
-        String[] secretParts = StringUtils.splitByWholeSeparatorPreserveAllTokens(decodedOid, " ");
-
-        if(userCredentials.userName.equals(secretParts[0]) && userCredentials.password.equals(secretParts[1])) {
-          GAccessTicket gAccessTicket = GTicketGenerator.generate("demo", 30);
+        if(userCredentials.userName.equals(userName) && userCredentials.password.equals(password)) {
+          GAccessTicket gAccessTicket = GTicketGenerator.generate(userName, 30);
           return gAccessTicket;
         }
       }
