@@ -9,14 +9,12 @@ import gr.northdigital.gdpr.utils.GUnauthorizedException;
 import gr.northdigital.utilssl.SSL;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.sessions.Session;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.math.BigInteger;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -61,7 +59,7 @@ public class GAuthService {
           if(_session == null) {
             Date now = new Date();
             _session = new GSession();
-            _session.ticket = new GTicket();
+            _session.gTicket = new GTicket();
             _session.symmetricKey = symmetricKey;
             _session.subjectDN = x509Certificate.getSubjectDN().getName();
             _session.createdAt = now;
@@ -72,7 +70,7 @@ public class GAuthService {
             _session.lastAccessedAt = new Date();
           }
 
-          return _session.ticket;
+          return _session.gTicket;
         }
       }
     } catch (Exception e) {
