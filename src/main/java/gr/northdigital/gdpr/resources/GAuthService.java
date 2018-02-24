@@ -10,6 +10,7 @@ import gr.northdigital.utilssl.SSL;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.Servlet;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -28,7 +29,7 @@ public class GAuthService {
   @Path("/authenticate")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public GTicket authenticate(GUserCredentials userCredentials) throws Exception {
+  public GTicket authenticate(GUserCredentials userCredentials) {
     try {
       X509Certificate x509Certificate = SSL.loadCertificateFromPemString(userCredentials.pem);
       KeyStore keyStore = SSL.loadKeyStoreFromFile(BASE_PATH + "keys.jks", "sporades");
